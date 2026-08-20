@@ -1,5 +1,5 @@
 import express, { type Express, type Request, type Response } from 'express';
-
+import cookieParser from 'cookie-parser';
 import { db } from './db/index.ts';
 
 import router from "./routes/index.ts";
@@ -12,6 +12,7 @@ async function startServer() {
     const port = process.env.PORT || 3000;
     const app: Express = express();
     
+    app.use(cookieParser());
     app.use(express.json());
 
     router(app);
