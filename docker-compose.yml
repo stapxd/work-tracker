@@ -40,6 +40,7 @@ services:
       dockerfile: Dockerfile
     container_name: express_server
     restart: unless-stopped
+    command: ${APP_CMD:-npm run dev}
     depends_on:
       postgres:
         condition: service_healthy

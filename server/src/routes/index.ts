@@ -1,5 +1,7 @@
 import { type Express } from "express";
 
-export default function router(app: Express) {
+import userRouter from './parts/users.ts';
 
+export default function router(app: Express) {
+    app.use('/auth', userRouter);
 }

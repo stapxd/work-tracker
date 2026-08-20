@@ -2,10 +2,10 @@ import { integer, decimal, pgTable, varchar, date, timestamp } from "drizzle-orm
 import { relations } from "drizzle-orm";
 
 export const usersTable = pgTable("users", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  username: varchar({ length: 255 }).notNull().unique(),
-  hashed_password: varchar({ length: 255 }).notNull(),
-  timestamp: timestamp()
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  username: varchar("username", { length: 255 }).notNull().unique(),
+  hashed_password: varchar("hashed_password", { length: 255 }).notNull(),
+  timestamp: timestamp("timestamp").defaultNow(),
   // in the future of course it would be better to use email and/or OpenID google auth
   // + send verefication through email
 });
@@ -16,12 +16,12 @@ export const usersRelations = relations(usersTable, ({ many }) => ({
 }));
 
 export const jobsTable = pgTable("jobs", {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    title: varchar({ length: 255 }).notNull(),
-    owner: integer()
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    title: varchar("title", { length: 255 }).notNull(),
+    owner: integer("owner")
         .notNull()
         .references(() => usersTable.id, { onDelete: "cascade" }),
-    rate: decimal({ precision: 10, scale: 2 }).default('10.0').notNull()
+    rate: decimal("rate", { precision: 10, scale: 2 }).default('10.0').notNull()
 });
 
 export const jobsRelations = relations(jobsTable, ({ one, many }) => ({
@@ -33,9 +33,9 @@ export const jobsRelations = relations(jobsTable, ({ one, many }) => ({
 }));
 
 export const projectsTable = pgTable("projects", {
-    id: integer().primaryKey().generatedAlwaysAsIdentity(),
-    title: varchar({ length: 255 }).notNull(),
-    parent_job: integer()
+    id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+    title: varchar("title", { length: 255 }).notNull(),
+    parent_job: integer("parent_job")
         .notNull()
         .references(() => jobsTable.id, { onDelete: "cascade" }),
 });
@@ -49,16 +49,16 @@ export const projectsRelations = relations(projectsTable, ({ one, many }) => ({
 }));
 
 export const daysTable = pgTable("days", {
-  id: integer().primaryKey().generatedAlwaysAsIdentity(),
-  hours_worked: integer().notNull().default(0),
+  id: integer("id").primaryKey().generatedAlwaysAsIdentity(),
+  hours_worked: integer("hours_worked").notNull().default(0),
   cached_rate: decimal({ precision: 10, scale: 2 }),
-  user_id: integer()
+  user_id: integer("user_id")
     .notNull()
     .references(() => usersTable.id, { onDelete: "cascade" }),
-  project_id: integer()
+  project_id: integer("project_id")
     .notNull()
     .references(() => projectsTable.id, { onDelete: "cascade" }),
-  date: date().notNull(),
+  date: date("date").notNull(),
 });
 
 export const daysRelations = relations(daysTable, ({ one }) => ({

@@ -12,6 +12,8 @@ async function startServer() {
     const port = process.env.PORT || 3000;
     const app: Express = express();
     
+    app.use(express.json());
+
     router(app);
     
     app.get('/', (req: Request, res: Response) => {
