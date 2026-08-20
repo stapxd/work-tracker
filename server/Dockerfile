@@ -3,5 +3,5 @@ WORKDIR /server
 COPY package*.json ./
 RUN npm install
 COPY . .
-CMD ["node", "./src/index.ts"]
 EXPOSE 3000
+CMD ["npm", "start"]

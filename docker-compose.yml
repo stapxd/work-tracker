@@ -40,6 +40,13 @@ services:
       dockerfile: Dockerfile
     container_name: express_server
     restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgres 
     ports:
       - "${PORT:-3000}:${PORT:-3000}"
     volumes:

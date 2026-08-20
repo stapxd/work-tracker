@@ -1,20 +1,32 @@
 import express, { type Express, type Request, type Response } from 'express';
-import dotenv from "dotenv";
-import { drizzle } from 'drizzle-orm/node-postgres';
 
-dotenv.config();
-const port = process.env.PORT || 3000;
-
-const app: Express = express();
+import { db } from './db/index.ts';
 
 import router from "./routes/index.ts";
-router(app);
+import { sql } from 'drizzle-orm';
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello World!');
-});
+async function startServer() {
+  try {
+    await db.execute(sql`SELECT 1`);
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-  console.log(`http://localhost:${port}`);
-});
+    const port = process.env.PORT || 3000;
+    const app: Express = express();
+    
+    router(app);
+    
+    app.get('/', (req: Request, res: Response) => {
+      res.send('Hello World!');
+    });
+    
+    app.listen(port, () => {
+      console.log(`Example app listening on port ${port}`);
+      console.log(`http://localhost:${port}`);
+    });
+  }
+  catch(error) {
+    console.error('Failed to connect to DB:', error);
+    process.exit(1);
+  }
+}
+
+startServer();
