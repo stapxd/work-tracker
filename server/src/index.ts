@@ -2,6 +2,7 @@ import express, { type Express, type Request, type Response } from 'express';
 import cookieParser from 'cookie-parser';
 import { db } from './db/index.ts';
 
+import cors from 'cors';
 import router from "./routes/index.ts";
 import { sql } from 'drizzle-orm';
 
@@ -14,6 +15,17 @@ async function startServer() {
     
     app.use(cookieParser());
     app.use(express.json());
+
+    app.use(cors({
+      origin: [
+          "http://localhost:5173",
+          "http://172.28.48.1:5173",
+          "http://192.168.1.102:5173"
+      ],
+      credentials: true,              
+      methods: ['GET', 'POST', 'PUT', 'DELETE'],
+      allowedHeaders: ['Content-Type', 'Authorization']
+    }));
 
     router(app);
     
