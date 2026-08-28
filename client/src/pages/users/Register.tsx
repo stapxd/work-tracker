@@ -5,7 +5,9 @@ import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button';
 import Alert from 'react-bootstrap/Alert';
+import Spinner from 'react-bootstrap/Spinner';
 import { Link, useNavigate } from 'react-router-dom';
+import { api } from '../../api';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -28,13 +30,13 @@ export default function Register() {
     setLoading(true);
 
     try {
-      // TODO: Call your Express registration API endpoint here
       console.log('Registering user:', { username, password });
 
-      // Simulate network request
-      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await api.post('/auth/register', {
+        username: username,
+        password: password
+      });
 
-      // Redirect to login page upon success
       navigate('/login');
     } catch (err) {
       setError('Failed to create account. Please try again.');
@@ -42,6 +44,14 @@ export default function Register() {
       setLoading(false);
     }
   };
+
+  if(loading) {
+    return (
+      <Spinner animation="border" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </Spinner>
+    );
+  }
 
   return (
     <Container className="py-5 flex-grow-1 d-flex align-items-center justify-content-center">

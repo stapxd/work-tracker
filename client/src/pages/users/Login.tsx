@@ -8,8 +8,10 @@ import Alert from 'react-bootstrap/Alert';
 import { Link, useNavigate } from 'react-router-dom';
 
 import { api } from '../../api';
+import { useAuth } from '../../other/AuthProvider';
 
 export default function Login() {
+  const {refreshUser} = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -29,6 +31,8 @@ export default function Login() {
         username: username,
         password: password
       });
+
+      refreshUser();
 
       navigate('/');
     } catch (err) {

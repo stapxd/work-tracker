@@ -23,12 +23,6 @@ export default function Home() {
 
     const { user, refreshUser } = useAuth();
 
-    useEffect(() => {
-        if (user) {
-            refreshUser();
-        }
-    }, []);
-
     return (
         <Container className="py-5 flex-grow-1 d-flex flex-column justify-content-center">
         {!user ? (
