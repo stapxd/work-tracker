@@ -11,6 +11,7 @@ import { useAuth } from '../../other/AuthProvider';
 import Form from 'react-bootstrap/Form';
 import { api } from '../../api';
 import Spinner from 'react-bootstrap/Spinner';
+import CloseButton from 'react-bootstrap/CloseButton';
 
 interface User {
   id: number;
@@ -77,6 +78,23 @@ export default function Dashboard() {
     } catch (err) {
         console.error(err);
         setJobs([]);
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  const deleteJob = async (jobId: number) => {
+    try {
+        setLoading(true);
+        const response = await api.delete('/jobs/delete', {
+            data: { jobId }
+        });
+
+        if (response.status === 200) {
+            setJobs(jobs.filter(job => job.id !== jobId));
+        }
+    } catch (err) {
+        console.error(err);
     } finally {
         setLoading(false);
     }
@@ -159,10 +177,12 @@ export default function Dashboard() {
                         className="d-flex justify-content-between align-items-center p-3"
                     >
                         <div>
-                        <h5 className="mb-1 fw-bold">{job.title}</h5>
-                        <p className="text-muted mb-0 small">
-                            Company
-                        </p>
+                            <Link to={`/jobs/${job.id}`} className="text-decoration-none mb-1 fw-bold">
+                                {job.title}
+                            </Link>
+                            <p className="text-muted mb-0 small">
+                                Company
+                            </p>
                         </div>
 
                         <div className="d-flex align-items-center gap-3">
@@ -172,7 +192,7 @@ export default function Dashboard() {
                         <Badge>
                             {job.rate}
                         </Badge>
-                        <small className="text-muted">24.02.22</small>
+                        <CloseButton onClick={() => deleteJob(job.id)} />
                         </div>
                     </ListGroup.Item>
                     ))}

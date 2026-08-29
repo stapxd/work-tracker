@@ -13,6 +13,7 @@ import { jobModel } from '../Models/JobModel.ts';
 interface IJobController {
     create: RequestHandler;
     getAllByMe: RequestHandler;
+    getOneById: RequestHandler;
     edit: RequestHandler;
     delete: RequestHandler;
 }
@@ -42,6 +43,36 @@ export const jobController: IJobController = {
         }
     },
 
+    getOneById: async (req: Request, res: Response) => {
+        try {
+            const idParam = req.params.id;
+            const idString = Array.isArray(idParam) ? idParam[0] : idParam;
+            const jobId = parseInt(idString, 10);
+
+            const job = await jobModel.getOneById(jobId);
+
+            if(!job) {
+                throw 'Job not found.'
+            }
+
+            if(job.owner !== req.userId) {
+                res.status(404).json({
+                    message: 'Job not found.'
+                });
+                return;
+            }
+
+            res.status(200).json({
+                job: job
+            });
+
+        } catch(error) {
+            res.status(500).json({
+                message: 'Error getting job. Try again later.'
+            });
+        }
+    },
+
     getAllByMe: async (req: Request, res: Response) => {
         try {
             const jobs = await jobModel.getAllByOwner(req.userId!);
@@ -58,7 +89,17 @@ export const jobController: IJobController = {
 
     delete: async (req: Request, res: Response) => {
         try {
+            const jobId: number = req.body.jobId;
+
+            const deletedJob = await jobModel.delete(jobId);
+
+            if(!deletedJob) {
+                throw 'Could not delete the job.'
+            }
             
+            res.status(200).json({
+                message: 'Job deleted successfully.'
+            });            
         } catch(error) {
             //console.log(error);
             res.status(500).json({

@@ -15,6 +15,9 @@ import NotFound from './pages/general/NotFound.tsx';
 import Register from './pages/users/Register.tsx';
 import Login from './pages/users/Login.tsx';
 
+// Jobs
+import Job from './pages/jobs/Job.tsx';
+
 function App() {
 
   return (
@@ -27,6 +30,10 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/about" element={<About />} />
 
+            {/* Jobs */}
+            <Route path="/jobs/:id" element={<Job />} />
+            
+            {/* Users */}
             <Route path="/register" element={<Register />} />
             <Route path="/login" element={<Login />} />
 
