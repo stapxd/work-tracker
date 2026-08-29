@@ -12,6 +12,7 @@ import { jobModel } from '../Models/JobModel.ts';
 
 interface IJobController {
     create: RequestHandler;
+    getAllByMe: RequestHandler;
     edit: RequestHandler;
     delete: RequestHandler;
 }
@@ -37,6 +38,20 @@ export const jobController: IJobController = {
         } catch(error) {
             res.status(500).json({
                 message: 'Error creating job. Try again later.'
+            });
+        }
+    },
+
+    getAllByMe: async (req: Request, res: Response) => {
+        try {
+            const jobs = await jobModel.getAllByOwner(req.userId!);
+
+            res.status(200).json({
+                jobs: jobs
+            });
+        } catch(error) {
+            res.status(500).json({
+                message: 'Error getting jobs. Try again later.'
             });
         }
     },

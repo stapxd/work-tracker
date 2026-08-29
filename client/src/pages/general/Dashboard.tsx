@@ -9,6 +9,8 @@ import ListGroup from 'react-bootstrap/ListGroup';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../other/AuthProvider';
 import Form from 'react-bootstrap/Form';
+import { api } from '../../api';
+import Spinner from 'react-bootstrap/Spinner';
 
 interface User {
   id: number;
@@ -17,18 +19,68 @@ interface User {
 
 interface Job {
     id: number;
-  title: string;
+    title: string;
+    rate: number;
 }
 
 export default function Dashboard() {
     const [jobs, setJobs] = useState<Job[]>([]);
 
-    const { user, refreshUser } = useAuth();
+    const { user } = useAuth();
 
     const [showAddJobModal, setShowAddJobModal] = useState<boolean>(false);
     const handleShowAddJobModal = () => setShowAddJobModal(true);
     const handleCloseAddJobModal = () => setShowAddJobModal(false);
 
+    const [newTitle, setTitle] = useState<string>('');
+    const [isLoading, setLoading] = useState<boolean>(false);
+
+    useEffect(() => {
+        if (!user) return;
+
+        const fetchJobs = async () => {
+        try {
+            setLoading(true);
+            const response = await api.get('/jobs/get_all_by_me');
+
+            const fetchedData = response?.data.jobs;
+
+            if (Array.isArray(fetchedData)) {
+                setJobs(fetchedData);
+            } else {
+                //console.error('API did not return an array:', response);
+                setJobs([]);
+            }
+        } catch (err) {
+            console.error(err);
+            setJobs([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchJobs();
+  }, [user]);
+
+  const addJob = async () => {
+    try {
+        setLoading(true);
+        const response = await api.post('/jobs/create', {
+            title: newTitle
+        });
+
+        const newJob = response?.data.job;
+
+        setJobs([...jobs, newJob]);
+        setShowAddJobModal(false);
+
+    } catch (err) {
+        console.error(err);
+        setJobs([]);
+    } finally {
+        setLoading(false);
+    }
+  };
 
     return (
         <Container className="py-5 flex-grow-1 d-flex flex-column justify-content-center">
@@ -38,10 +90,11 @@ export default function Dashboard() {
           <Modal.Title>Add Job</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-            <Form.Control type="text" placeholder="Title" />
+            <Form.Control type="text" placeholder="Title" value={newTitle}
+                 onChange={(e) => setTitle(e.target.value)}/>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="primary" onClick={handleCloseAddJobModal}>
+          <Button variant="primary" onClick={addJob}>
             Add
           </Button>
         </Modal.Footer>
@@ -87,8 +140,9 @@ export default function Dashboard() {
                 <Button variant="success" onClick={handleShowAddJobModal}>+ Add Job</Button>
                 </div>
 
-                {jobs.length === 0 ? (
-                /* Empty List Placeholder */
+                {
+                !isLoading ? (
+                jobs.length === 0 ? (
                 <ListGroup className="shadow-sm">
                     <ListGroup.Item className="text-center py-5 text-muted">
                     <p className="mb-2 fs-5">No jobs to track.</p>
@@ -98,7 +152,6 @@ export default function Dashboard() {
                     </ListGroup.Item>
                 </ListGroup>
                 ) : (
-                /* FUTURE EXPANSION: Vertical Job List */
                 <ListGroup className="shadow-sm">
                     {jobs.map((job) => (
                     <ListGroup.Item
@@ -108,19 +161,26 @@ export default function Dashboard() {
                         <div>
                         <h5 className="mb-1 fw-bold">{job.title}</h5>
                         <p className="text-muted mb-0 small">
-                            Company • LA
+                            Company
                         </p>
                         </div>
 
                         <div className="d-flex align-items-center gap-3">
+                        <p className="text-muted mb-0 small">
+                            rate:
+                        </p>
                         <Badge>
-                            Status
+                            {job.rate}
                         </Badge>
                         <small className="text-muted">24.02.22</small>
                         </div>
                     </ListGroup.Item>
                     ))}
                 </ListGroup>
+                )) : (
+                    <Spinner animation="border" role="status">
+                      <span className="visually-hidden">Loading...</span>
+                    </Spinner>
                 )}
             </Col>
             </Row>
