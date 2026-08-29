@@ -1,5 +1,4 @@
-
-import { Routes, Route } from 'react-router-dom';
+import { Navigate, Routes, Route } from 'react-router-dom';
 
 // Bootstrap
 import Container from 'react-bootstrap/Container';
@@ -8,7 +7,7 @@ import Container from 'react-bootstrap/Container';
 import Header from './pages/partials/Header.tsx';
 
 // General
-import Home from './pages/general/Home.tsx';
+import Dashboard from './pages/general/Dashboard.tsx';
 import About from './pages/general/About.tsx';
 import NotFound from './pages/general/NotFound.tsx';
 
@@ -24,7 +23,8 @@ function App() {
 
         <Container>
           <Routes>
-            <Route path="/" element={<Home />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route path="/dashboard" element={<Dashboard />} />
             <Route path="/about" element={<About />} />
 
             <Route path="/register" element={<Register />} />

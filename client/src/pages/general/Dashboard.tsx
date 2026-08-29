@@ -4,9 +4,11 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import Badge from 'react-bootstrap/Badge';
+import Modal from 'react-bootstrap/Modal';
 import ListGroup from 'react-bootstrap/ListGroup';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../other/AuthProvider';
+import Form from 'react-bootstrap/Form';
 
 interface User {
   id: number;
@@ -18,13 +20,33 @@ interface Job {
   title: string;
 }
 
-export default function Home() {
+export default function Dashboard() {
     const [jobs, setJobs] = useState<Job[]>([]);
 
     const { user, refreshUser } = useAuth();
 
+    const [showAddJobModal, setShowAddJobModal] = useState<boolean>(false);
+    const handleShowAddJobModal = () => setShowAddJobModal(true);
+    const handleCloseAddJobModal = () => setShowAddJobModal(false);
+
+
     return (
         <Container className="py-5 flex-grow-1 d-flex flex-column justify-content-center">
+
+        <Modal show={showAddJobModal} onHide={handleCloseAddJobModal}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add Job</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+            <Form.Control type="text" placeholder="Title" />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="primary" onClick={handleCloseAddJobModal}>
+            Add
+          </Button>
+        </Modal.Footer>
+      </Modal>
+
         {!user ? (
             <Row className="justify-content-center text-center">
             <Col md={8} lg={6}>
@@ -62,7 +84,7 @@ export default function Home() {
                     <h2 className="h3 mb-1">Your Job list</h2>
                     <p className="text-muted mb-0">Welcome back, {user.username}!</p>
                 </div>
-                <Button variant="success">+ Add Job</Button>
+                <Button variant="success" onClick={handleShowAddJobModal}>+ Add Job</Button>
                 </div>
 
                 {jobs.length === 0 ? (

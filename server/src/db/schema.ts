@@ -21,7 +21,7 @@ export const jobsTable = pgTable("jobs", {
     owner: integer("owner")
         .notNull()
         .references(() => usersTable.id, { onDelete: "cascade" }),
-    rate: decimal("rate", { precision: 10, scale: 2 }).default('10.0').notNull()
+    rate: decimal("rate", { precision: 10, scale: 2 }).default('0.0').notNull()
 });
 
 export const jobsRelations = relations(jobsTable, ({ one, many }) => ({

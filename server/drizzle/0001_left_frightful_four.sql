@@ -1,0 +1,1 @@
+ALTER TABLE "jobs" ALTER COLUMN "rate" SET DEFAULT '0.0';
